@@ -1,0 +1,29 @@
+.env
+*config.json
+*.pyc
+__pycache__/
+
+# Python environments
+venv/
+.venv/
+env/
+.virtualenv/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Python testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# CS Assistant specific
+cs-assistant-output/
+
+.mypy_cache/

@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Configuration Schema",
+  "description": "Schema for the configuration file (config.json)",
+  "type": "object",
+  "properties": {
+    "solve_issue": {
+      "description": "Configuration settings for the issue solving functionality.",
+      "type": "object",
+      "properties": {
+        "llm_model": {
+          "description": "The identifier for the large language model to be used.",
+          "type": "string"
+        },
+        "temperature": {
+          "description": "Controls the randomness of the model's output. Higher values mean more randomness.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "verbal_algorithm": {
+          "description": "Settings for verbal algorithm explanation.",
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "description": "Whether to enable verbal algorithm explanations.",
+              "type": "boolean"
+            },
+            "languages": {
+              "description": "List of languages for verbal explanations.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "include_pseudocode": {
+              "description": "Whether to include pseudocode in the output.",
+              "type": "boolean"
+            }
+          },
+          "required": ["enabled", "languages", "include_pseudocode"]
+        },
+        "include_mermaid_diagram": {
+          "description": "Whether to include a Mermaid diagram in the output.",
+          "type": "boolean"
+        },
+        "code_implementations": {
+          "description": "Settings for code implementation generation.",
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "description": "Whether to enable code implementation generation.",
+              "type": "boolean"
+            },
+            "languages": {
+              "description": "List of programming languages for code implementations.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["enabled", "languages"]
+        }
+      },
+      "required": [
+        "llm_model",
+        "temperature",
+        "verbal_algorithm",
+        "include_mermaid_diagram",
+        "code_implementations"
+      ]
+    },
+    "output_directory": {
+      "description": "Directory where solution files will be saved.",
+        "type": "string"
+      }
+  },
+  "required": [
+    "solve_issue",
+    "output_directory"
+  ]
+} 
