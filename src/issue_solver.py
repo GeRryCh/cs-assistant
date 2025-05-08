@@ -313,7 +313,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
             f.write("# Verbal Algorithm\n\n")
             f.write(verbal_algorithm + "\n\n")
         
-        print(f"Added verbal algorithm to {md_path.name}")
+        # print(f"Added verbal algorithm to {md_path.name}")
 
     @staticmethod
     def _process_pseudocode(solution_data: Dict, solution_path: Path) -> None:
@@ -352,7 +352,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
             f.write("# Pseudocode\n\n")
             f.write(pseudocode + "\n\n")
         
-        print(f"Added pseudocode to {md_path.name}")
+        # print(f"Added pseudocode to {md_path.name}")
 
     @staticmethod
     def _process_code_implementations(solution_data: Dict, solution_path: Path) -> None:
@@ -406,7 +406,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
             try:
                 with open(file_path, 'w') as f:
                     f.write(code)
-                print(f"Written: {file_path.name}")
+                # print(f"Written: {file_path.name}")
             except IOError as e:
                 print(f"Error writing file {file_path.name} for language '{lang_key}': {e}")
 
@@ -441,7 +441,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         try:
             with open(diagram_path, 'w') as f:
                 f.write(mermaid_diagram)
-            print(f"Written: {diagram_path.name}")
+            # print(f"Written: {diagram_path.name}")
         except IOError as e:
             print(f"Error writing Mermaid diagram file {diagram_path.name}: {e}")
 
@@ -494,7 +494,6 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
 
         api_caller = self.api_callers[provider]
         model_name = solve_issue_config.llm_config.get_model_name()
-        print(f"Using LLM: {model_name} via {provider.value}")
 
         # Create ApiCallConfig instance
         api_config_instance = ApiCallConfig(
@@ -535,7 +534,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
             # Create output directory using the sanitized problem name inside the configured output directory
             solution_path = Path(self.config.output_directory) / output_dir_name
             solution_path.mkdir(parents=True, exist_ok=True)
-            print(f"Created solution directory: {solution_path.resolve()}")
+            # print(f"Created solution directory: {solution_path.resolve()}")
 
             # Process each field with its own method
             self._process_verbal_algorithm(solution_data, solution_path)
