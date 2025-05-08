@@ -473,7 +473,6 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         Returns:
             Optional[str]: The path to the created solution directory if successful, None otherwise.
         """
-        print(f"\nGenerating solution for: {issue_description}")
         
         solve_issue_config = self.config.solve_issue
         temperature = solve_issue_config.llm_config.temperature

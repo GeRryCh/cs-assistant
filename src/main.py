@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 from pathlib import Path
 from config import Config
 from spinner import Spinner
-from constants import GREEN, RED, YELLOW, RESET
+import constants
+
 
 def load_config_from_file(config_path: str) -> Config:
     if not config_path or not os.path.exists(config_path):
@@ -46,9 +47,9 @@ def create_default_config(args: argparse.Namespace) -> None:
         with open(output_path, 'w') as f:
             f.write(config.to_json(indent=2))
             
-        print(f"{GREEN}Successfully created configuration file at: {output_path}{RESET}")
+        print(f"{constants.GREEN}Successfully created configuration file at: {output_path}{constants.RESET}")
     except Exception as e:
-        print(f"{RED}Error creating configuration file: {e}{RESET}")
+        print(f"{constants.RED}Error creating configuration file: {e}{constants.RESET}")
         sys.exit(1)
 
 def setup_arg_parser() -> argparse.ArgumentParser:
@@ -158,7 +159,7 @@ def _load_environment_variables():
     csarc_path = Path.home() / ".config" / "cs_assistant" / ".csarc"
     
     if csarc_path.is_file():
-        print(f"Loading environment variables from: {csarc_path}")
+        print(f"Loaded environment variables from: {csarc_path}")
         load_dotenv(dotenv_path=csarc_path)
     else:
         print(f"Configuration file not found at {csarc_path}.")
@@ -185,18 +186,18 @@ ANTHROPIC_API_KEY="YOUR_ANTHROPIC_API_KEY_HERE"
             with open(csarc_path, "w") as f:
                 f.write(default_content)
                 
-            print(f"{YELLOW}Successfully created template configuration file at: {csarc_path}")
-            print(f"Please edit this file and add your API keys.{RESET}")
+            print(f"{constants.YELLOW}Successfully created template configuration file at: {csarc_path}")
+            print(f"Please edit this file and add your API keys.{constants.RESET}")
             
             # Exit after creating the template, as it needs user intervention.
             print("Exiting. Please populate the configuration file and run the tool again.")
             sys.exit(0) # Exit gracefully after creating the file
             
         except IOError as e:
-            print(f"{RED}Error creating configuration file {csarc_path}: {e}{RESET}")
+            print(f"{constants.RED}Error creating configuration file {csarc_path}: {e}{constants.RESET}")
             sys.exit(1) # Exit if we cannot create the config file
         except Exception as e: # Catch other potential errors like permission issues
-            print(f"{RED}An unexpected error occurred during configuration file creation: {e}{RESET}")
+            print(f"{constants.RED}An unexpected error occurred during configuration file creation: {e}{constants.RESET}")
             sys.exit(1)
 
 def resolve_config(args: argparse.Namespace) -> Config:
@@ -224,10 +225,16 @@ def handle_create_config(args: argparse.Namespace) -> None:
 
 def handle_solve_issue(args: argparse.Namespace, config: Config) -> None:
     """Handles the solve-issue command."""
+    print(f"{constants.GREY}Using configuration:\n{config.to_json(indent=2)}{constants.RESET}")
     solver = IssueSolver(config=config)
-    solution_path = solver.solve(args.issue_description)
+    spinner = Spinner("Generating solution...")
+    spinner.start()
+    try:
+        solution_path = solver.solve(args.issue_description)
+    finally:
+        spinner.stop()
     # Print success message in green
-    print(f"{GREEN}Success!🎉 Solution saved to: {solution_path}{RESET}")
+    print(f"{constants.GREEN}Success!🎉 Solution saved to: {solution_path}{constants.RESET}")
 
 def main():
     # Load environment variables
