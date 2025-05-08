@@ -2,6 +2,7 @@
 cs-assistant-output/
 *config.json
 TODO.md
+.cursorrules
 
 # Python environments
 .env
