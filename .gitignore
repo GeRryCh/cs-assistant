@@ -27,3 +27,8 @@ htmlcov/
 cs-assistant-output/
 
 .mypy_cache/
+
+# Node.js
+node_modules/
+package-lock.json
+package.json
