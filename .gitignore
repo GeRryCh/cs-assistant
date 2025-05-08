@@ -1,9 +1,13 @@
-.env
+# CS Assistant specific
+cs-assistant-output/
 *config.json
+TODO.md
+
+# Python environments
+.env
 *.pyc
 __pycache__/
 
-# Python environments
 venv/
 .venv/
 env/
@@ -22,9 +26,6 @@ htmlcov/
 
 # Jupyter Notebook
 .ipynb_checkpoints/
-
-# CS Assistant specific
-cs-assistant-output/
 
 .mypy_cache/
 
