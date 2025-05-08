@@ -1,5 +1,8 @@
 # CS Assistant
 
+🎥 WATCH THE USAGE EXAMPLE VIDEO BY CLICKING ON THE IMAGE BELOW 🎥
+[![CS Assistant Demo](https://img.youtube.com/vi/ZOk53RLavdc/0.jpg)](https://www.youtube.com/watch?v=ZOk53RLavdc)
+
 CS Assistant is a command-line tool that helps solve computer science problems by leveraging large language models. It can generate algorithmic explanations, pseudocode, code implementations in multiple programming languages, and visual diagrams.
 
 ## Features
