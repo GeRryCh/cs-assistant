@@ -2,12 +2,12 @@ import os
 import json
 import argparse
 import re  # Added for sanitization
-from enum import Enum
 from typing import Dict, Callable, Optional, List, Any, Set
 from pathlib import Path
 from dataclasses import dataclass # Import dataclass
 import api_clients
 from config import Config, SolveIssueConfig
+from llm_config import ModelProvider
 
 # --- API Call Configuration ---
 @dataclass
@@ -19,12 +19,6 @@ class ApiCallConfig:
     requested_fields: List[str]
 
 # --- Constants ---
-# Model provider enum
-class ModelProvider(Enum):
-    OPENAI = "openai"
-    GOOGLE = "google"
-    ANTHROPIC = "anthropic"
-
 # Field descriptions for system prompt
 SYSTEM_PROMPT_FIELD_DESCRIPTIONS = {
     "problem_name": '`"problem_name"`: (String) A concise, filesystem-friendly name for the programming problem (e.g., "fibonacci_sequence", "two_sum_problem", "binary_search"). Use snake_case.',
@@ -98,13 +92,6 @@ USER_PROMPT_FIELDS = {
     "problem_statement": "Problem: {problem}"
 }
 
-# Map provider strings to ModelProvider enum values
-PROVIDER_MAP: Dict[str, ModelProvider] = {
-    "openai": ModelProvider.OPENAI,
-    "google": ModelProvider.GOOGLE,
-    "anthropic": ModelProvider.ANTHROPIC
-}
-
 class IssueSolver:
     # --- Class Constants ---
     VERBAL_ALGORITHM_FILENAME = "verbal_algorithm.md"
@@ -175,31 +162,6 @@ class IssueSolver:
         if not name: # Handle case where name becomes empty
             return "unnamed_solution"
         return name
-
-    @staticmethod
-    def _get_model_provider(model_name: str) -> ModelProvider:
-        """
-        Determines the appropriate provider based on the given model name.
-        
-        Args:
-            model_name (str): The name of the model or provider to use.
-            
-        Returns:
-            ModelProvider: The determined provider for the model.
-            
-        Raises:
-            ValueError: If the model provider cannot be determined from the model name.
-        """
-        # For models that start with provider prefixes
-        # Handle potential full model paths like "google/gemini-pro"
-        provider_part = model_name.split('/')[0].lower()
-
-        # Try to get provider from mapping
-        if provider_part in PROVIDER_MAP:
-            return PROVIDER_MAP[provider_part]
-
-        # Raise an exception for unknown models
-        raise ValueError(f"Unknown model provider: {model_name}. Cannot determine the appropriate API provider.")
 
     @staticmethod
     def _build_requested_fields(config: SolveIssueConfig) -> List[str]:
@@ -514,8 +476,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         print(f"\nGenerating solution for: {issue_description}")
         
         solve_issue_config = self.config.solve_issue
-        llm_model = solve_issue_config.llm_model
-        temperature = solve_issue_config.temperature
+        temperature = solve_issue_config.llm_config.temperature
 
         # Build the system prompt with the requested fields
         requested_fields = self._build_requested_fields(solve_issue_config)
@@ -529,15 +490,15 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
             solve_issue_config.code_implementations.languages if solve_issue_config.code_implementations is not None else []
         )
 
-        provider = self._get_model_provider(llm_model)
+        provider = solve_issue_config.llm_config.get_model_provider()
 
         api_caller = self.api_callers[provider]
-        api_model_name = llm_model.split('/')[-1]
-        print(f"Using API model: {api_model_name} via {provider.value}")
+        model_name = solve_issue_config.llm_config.get_model_name()
+        print(f"Using LLM: {model_name} via {provider.value}")
 
         # Create ApiCallConfig instance
         api_config_instance = ApiCallConfig(
-            model_name=api_model_name, 
+            model_name=model_name, 
             system_prompt=system_prompt, 
             user_prompt=user_prompt, 
             temperature=temperature,

@@ -1,6 +1,7 @@
 from dataclasses import dataclass, asdict, field
 from typing import List, Any, Dict, Optional, Union
 import json
+from llm_config import LLMConfig
 
 @dataclass(frozen=True)
 class VerbalAlgorithmConfig:
@@ -16,8 +17,7 @@ class CodeImplementationsConfig:
 @dataclass(frozen=True)
 class SolveIssueConfig:
     """Configuration specific to the 'solve_issue' functionality."""
-    llm_model: str = "openai/gpt-4o"
-    temperature: float = 0.7
+    llm_config: LLMConfig = field(default_factory=LLMConfig)
     verbal_algorithm: Optional[VerbalAlgorithmConfig] = field(default_factory=VerbalAlgorithmConfig)
     include_mermaid_diagram: bool = True
     code_implementations: Optional[CodeImplementationsConfig] = field(default_factory=CodeImplementationsConfig)
@@ -32,35 +32,6 @@ class Config:
     output_directory: str = "cs-assistant-output"
 
     @classmethod
-    def create_default(cls) -> 'Config':
-        """
-        Creates a Config object with default values.
-
-        Returns:
-            An immutable Config object with recommended default settings.
-        """
-        verbal_algo_config = VerbalAlgorithmConfig(
-            languages=["en"]
-        )
-
-        code_impl_config = CodeImplementationsConfig(
-            languages=["Python"]
-        )
-
-        solve_issue_config = SolveIssueConfig(
-            llm_model="google/models/gemini-2.5-pro-exp-03-25",
-            temperature=0.7,
-            verbal_algorithm=verbal_algo_config,
-            include_mermaid_diagram=True,
-            code_implementations=code_impl_config
-        )
-
-        return cls(
-            solve_issue=solve_issue_config,
-            output_directory="cs-assistant-output"
-        )
-
-    @classmethod
     def from_json(cls, json_data: Union[str, Dict[str, Any]]) -> 'Config':
         """
         Creates a Config object from JSON data.
@@ -70,8 +41,10 @@ class Config:
                       Expected structure:
                       {
                           "solve_issue": {
-                              "llm_model": str,
-                              "temperature": float,
+                              "llm_config": {
+                                  "model_config_name": str,
+                                  "temperature": float
+                              },
                               "verbal_algorithm": {
                                   "languages": List[str]
                               } | null,
@@ -113,6 +86,19 @@ class Config:
 
         solve_issue_data = config_dict["solve_issue"]
 
+        # Parse nested model configuration
+        model_data = solve_issue_data.get("llm_config")
+        if model_data is None or not isinstance(model_data, dict):
+            raise ValueError("Missing or invalid 'llm_config' configuration in solve_issue")
+        if "model_config_name" not in model_data:
+            raise ValueError("Missing 'model_config_name' in solve_issue.llm_config")
+        if "temperature" not in model_data:
+            raise ValueError("Missing 'temperature' in solve_issue.llm_config")
+        llm_config = LLMConfig(
+            model_config_name=str(model_data["model_config_name"]),
+            temperature=float(model_data["temperature"])
+        )
+
         # Create verbal algorithm config if present
         verbal_algo_config = None
         if (verbal_algo_data := solve_issue_data.get("verbal_algorithm")) is not None:
@@ -141,18 +127,12 @@ class Config:
             )
 
         # Create solve issue config
-        try:
-            solve_issue_config = SolveIssueConfig(
-                llm_model=str(solve_issue_data["llm_model"]),
-                temperature=float(solve_issue_data["temperature"]),
-                verbal_algorithm=verbal_algo_config,
-                include_mermaid_diagram=bool(solve_issue_data["include_mermaid_diagram"]),
-                code_implementations=code_impl_config
-            )
-        except KeyError as e:
-            raise ValueError(f"Missing required field in solve_issue config: {e}")
-        except (ValueError, TypeError) as e:
-            raise ValueError(f"Invalid value in solve_issue config: {e}")
+        solve_issue_config = SolveIssueConfig(
+            llm_config=llm_config,
+            verbal_algorithm=verbal_algo_config,
+            include_mermaid_diagram=bool(solve_issue_data["include_mermaid_diagram"]),
+            code_implementations=code_impl_config
+        )
 
         # Create and return the complete config
         return cls(
@@ -193,9 +173,12 @@ class Config:
                 languages=list(args.code_implementations_languages if hasattr(args, 'code_implementations_languages') else [])
             )
 
+        model_config = LLMConfig(
+            model_config_name=args.llm_model,
+            temperature=float(args.temperature)
+        )
         solve_issue_config = SolveIssueConfig(
-            llm_model=args.llm_model,
-            temperature=float(args.temperature),
+            llm_config=model_config,
             verbal_algorithm=verbal_algo_config,
             include_mermaid_diagram=args.include_mermaid_diagram,
             code_implementations=code_impl_config

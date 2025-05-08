@@ -94,8 +94,9 @@ def setup_arg_parser() -> argparse.ArgumentParser:
     solve_parser.add_argument(
         "-m", "--llm-model",
         type=str,
-        default="google/models/gemini-2.5-pro-exp-03-25",
-        help="The identifier for the large language model to be used. Format: 'vendor/model_name' where vendor (e.g., 'google', 'openai') represents the company providing the LLM.",
+        default="openai/gpt-4o",
+        help="The identifier for the large language model to be used. Format: 'vendor/model_name' "
+             "where vendor (e.g., 'google', 'openai') represents the company providing the LLM.",
     )
     solve_parser.add_argument(
         "-t", "--temperature",

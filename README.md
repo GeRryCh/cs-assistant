@@ -182,8 +182,10 @@ This will generate a JSON file with default settings that you can modify:
 ```json
 {
   "solve_issue": {
-    "llm_model": "google/models/gemini-2.5-pro-exp-03-25",
-    "temperature": 0.7,
+    "llm_config": {
+      "model_config_name": "openai/gpt-4o",
+      "temperature": 0.7
+    },
     "verbal_algorithm": {
       "languages": [
         "en"
