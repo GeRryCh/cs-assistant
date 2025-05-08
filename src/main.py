@@ -7,12 +7,8 @@ from issue_solver import IssueSolver
 from dotenv import load_dotenv
 from pathlib import Path
 from config import Config
-
-# ANSI color codes
-GREEN = "\033[32m"
-RED = "\033[31m"
-YELLOW = "\033[33m"
-RESET = "\033[0m"
+from spinner import Spinner
+from constants import GREEN, RED, YELLOW, RESET
 
 def load_config_from_file(config_path: str) -> Config:
     if not config_path or not os.path.exists(config_path):
