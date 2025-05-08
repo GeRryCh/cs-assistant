@@ -8,7 +8,6 @@ def call_openai_api(model_name, system_prompt, user_prompt, temperature):
     """Sends a request to the OpenAI API, requesting JSON, and returns the response string."""
     try:
         client = OpenAI() # Assumes OPENAI_API_KEY is set in environment
-        print(f"Calling OpenAI model: {model_name} for JSON output")
         response = client.chat.completions.create(
             model=model_name,
             messages=[
