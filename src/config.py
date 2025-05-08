@@ -16,7 +16,7 @@ class CodeImplementationsConfig:
 @dataclass(frozen=True)
 class SolveIssueConfig:
     """Configuration specific to the 'solve_issue' functionality."""
-    llm_model: str = "google/models/gemini-2.5-pro-exp-03-25"
+    llm_model: str = "openai/gpt-4o"
     temperature: float = 0.7
     verbal_algorithm: Optional[VerbalAlgorithmConfig] = field(default_factory=VerbalAlgorithmConfig)
     include_mermaid_diagram: bool = True
