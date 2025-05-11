@@ -1,0 +1,33 @@
+# Cline rules for Python CS Assistant CLI project
+
+# Source code and tests: full read/write access
+[allow]
+src/**/*.py
+tests/**/*.py
+
+# Configuration, documentation, and scripts: full read/write access
+[allow]
+config.schema.json
+README.md
+LICENSE
+pyproject.toml
+requirements.txt
+setup.sh
+release_to_pypi.sh
+release_to_testpypi.sh
+
+# Output directory: read-only access
+[readonly]
+cs-assistant-output/**
+
+# Deny access to packaging metadata and caches
+[deny]
+src/cs_assistant.egg-info/**
+**/__pycache__/**
+**/.mypy_cache/**
+
+# Deny access to secrets and environment files
+[deny]
+*.env
+.csarc
+config/secrets.*
