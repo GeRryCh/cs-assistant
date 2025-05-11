@@ -31,3 +31,16 @@ src/cs_assistant.egg-info/**
 *.env
 .csarc
 config/secrets.*
+
+# Structured Task Decomposition: automatically create a new task via new_task upon completing each subtask
+[task_decomposition]
+enable = true
+on_subtask_complete = new_task
+preload_context = [
+  "memory-bank/projectbrief.md",
+  "memory-bank/productContext.md",
+  "memory-bank/systemPatterns.md",
+  "memory-bank/techContext.md",
+  "memory-bank/activeContext.md",
+  "memory-bank/progress.md"
+]
