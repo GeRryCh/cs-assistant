@@ -59,7 +59,7 @@
               "description": "Whether to enable code implementation generation.",
               "type": "boolean"
             },
-            "languages": {
+            "implementation_languages": {
               "description": "List of programming languages for code implementations.",
               "type": "array",
               "items": {
@@ -67,7 +67,7 @@
               }
             }
           },
-          "required": ["enabled", "languages"]
+          "required": ["enabled", "implementation_languages"]
         }
       },
       "required": [

@@ -12,7 +12,7 @@ class VerbalAlgorithmConfig:
 @dataclass(frozen=True)
 class CodeImplementationsConfig:
     """Configuration for code implementations feature."""
-    languages: List[str] = field(default_factory=lambda: ["Python"])
+    implementation_languages: List[str] = field(default_factory=lambda: ["Python"])
 
 @dataclass(frozen=True)
 class SolveIssueConfig:
@@ -50,7 +50,7 @@ class Config:
                               } | null,
                               "include_mermaid_diagram": bool,
                               "code_implementations": {
-                                  "languages": List[str]
+                                  "implementation_languages": List[str]
                               } | null
                           },
                           "output_directory": str
@@ -118,12 +118,12 @@ class Config:
         if (code_impl_data := solve_issue_data.get("code_implementations")) is not None:
             if not isinstance(code_impl_data, dict):
                 raise ValueError("code_implementations must be an object or null")
-            if "languages" not in code_impl_data:
-                raise ValueError("code_implementations must contain 'languages' list")
-            if not isinstance(code_impl_data["languages"], list):
-                raise ValueError("code_implementations.languages must be a list")
+            if "implementation_languages" not in code_impl_data:
+                raise ValueError("code_implementations must contain 'implementation_languages' list")
+            if not isinstance(code_impl_data["implementation_languages"], list):
+                raise ValueError("code_implementations.implementation_languages must be a list")
             code_impl_config = CodeImplementationsConfig(
-                languages=list(code_impl_data["languages"])
+                implementation_languages=list(code_impl_data["implementation_languages"])
             )
 
         # Create solve issue config
@@ -170,7 +170,7 @@ class Config:
         code_impl_config: Optional[CodeImplementationsConfig] = None
         if hasattr(args, 'code_implementations') and args.code_implementations:
             code_impl_config = CodeImplementationsConfig(
-                languages=list(args.code_implementations_languages if hasattr(args, 'code_implementations_languages') else [])
+                implementation_languages=list(args.code_implementations_languages if hasattr(args, 'code_implementations_languages') else [])
             )
 
         model_config = LLMConfig(

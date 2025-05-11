@@ -197,7 +197,7 @@ This will generate a JSON file with default settings that you can modify:
     },
     "include_mermaid_diagram": true,
     "code_implementations": {
-      "languages": [
+      "implementation_languages": [
         "Python"
       ]
     }

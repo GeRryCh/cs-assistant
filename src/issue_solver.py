@@ -486,7 +486,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
             issue_description,
             requested_fields,
             solve_issue_config.verbal_algorithm.languages if solve_issue_config.verbal_algorithm is not None else [],
-            solve_issue_config.code_implementations.languages if solve_issue_config.code_implementations is not None else []
+            solve_issue_config.code_implementations.implementation_languages if solve_issue_config.code_implementations is not None else []
         )
 
         provider = solve_issue_config.llm_config.get_model_provider()
