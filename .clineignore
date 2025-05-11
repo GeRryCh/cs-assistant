@@ -1,0 +1,33 @@
+# CS Assistant specific
+cs-assistant-output/
+
+# Python environments
+.env
+*.pyc
+__pycache__/
+
+venv/
+.venv/
+env/
+.virtualenv/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Python testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+.mypy_cache/
+
+# Node.js
+node_modules/
+package-lock.json
+package.json
