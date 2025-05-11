@@ -4,7 +4,7 @@ from typing import Dict, Callable, Optional, List
 from pathlib import Path
 from dataclasses import dataclass # Import dataclass
 import api_clients
-from config import Config, SolveIssueConfig
+from config import Config, SolveConfig
 from llm_config import ModelProvider
 
 # --- API Call Configuration ---
@@ -162,7 +162,7 @@ class IssueSolver:
         return name
 
     @staticmethod
-    def _build_requested_fields(config: SolveIssueConfig) -> List[str]:
+    def _build_requested_fields(config: SolveConfig) -> List[str]:
         # Build requested fields list - problem_name is always included
         requested_fields = ["problem_name"]
         
@@ -471,25 +471,25 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
             Optional[str]: The path to the created solution directory if successful, None otherwise.
         """
         
-        solve_issue_config = self.config.solve_issue
-        temperature = solve_issue_config.llm_config.temperature
+        solve_config = self.config.solve
+        temperature = solve_config.llm_config.temperature
 
         # Build the system prompt with the requested fields
-        requested_fields = self._build_requested_fields(solve_issue_config)
+        requested_fields = self._build_requested_fields(solve_config)
         system_prompt = self._build_system_prompt(requested_fields)
 
         # Build the user prompt dynamically
         user_prompt = self._build_user_prompt(
             issue_description,
             requested_fields,
-            solve_issue_config.verbal_algorithm.language_code if solve_issue_config.verbal_algorithm is not None else None,
-            solve_issue_config.code_implementations.implementation_languages if solve_issue_config.code_implementations is not None else []
+            solve_config.verbal_algorithm.language_code if solve_config.verbal_algorithm is not None else None,
+            solve_config.code_implementations.implementation_languages if solve_config.code_implementations is not None else []
         )
 
-        provider = solve_issue_config.llm_config.get_model_provider()
+        provider = solve_config.llm_config.get_model_provider()
 
         api_caller = self.api_callers[provider]
-        model_name = solve_issue_config.llm_config.get_model_name()
+        model_name = solve_config.llm_config.get_model_name()
 
         # Create ApiCallConfig instance
         api_config_instance = ApiCallConfig(

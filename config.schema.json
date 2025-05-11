@@ -4,7 +4,7 @@
   "description": "Schema for the configuration file (config.json)",
   "type": "object",
   "properties": {
-    "solve_issue": {
+    "solve": {
       "description": "Configuration settings for the issue solving functionality.",
       "type": "object",
       "properties": {
@@ -83,7 +83,7 @@
       }
   },
   "required": [
-    "solve_issue",
+    "solve",
     "output_directory"
   ]
-} 
+}

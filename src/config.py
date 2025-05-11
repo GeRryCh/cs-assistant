@@ -15,8 +15,8 @@ class CodeImplementationsConfig:
     implementation_languages: List[str] = field(default_factory=lambda: ["Python"])
 
 @dataclass(frozen=True)
-class SolveIssueConfig:
-    """Configuration specific to the 'solve_issue' functionality."""
+class SolveConfig:
+    """Configuration specific to the 'solve' functionality."""
     llm_config: LLMConfig = field(default_factory=LLMConfig)
     verbal_algorithm: Optional[VerbalAlgorithmConfig] = field(default_factory=VerbalAlgorithmConfig)
     include_mermaid_diagram: bool = True
@@ -28,7 +28,7 @@ class Config:
     Represents the overall application configuration.
     It is strongly-typed and immutable after initialization.
     """
-    solve_issue: SolveIssueConfig = field(default_factory=SolveIssueConfig)
+    solve: SolveConfig = field(default_factory=SolveConfig)
     output_directory: str = "cs-assistant-output"
 
     @classmethod
@@ -40,7 +40,7 @@ class Config:
             json_data: Either a JSON string or a dictionary representing the configuration.
                       Expected structure:
                       {
-                          "solve_issue": {
+                          "solve": {
                               "llm_config": {
                                   "model_config_name": str,
                                   "temperature": float
@@ -78,22 +78,22 @@ class Config:
         if not isinstance(config_dict, dict):
             raise ValueError("JSON data must be an object")
         
-        if "solve_issue" not in config_dict:
-            raise ValueError("Missing required 'solve_issue' configuration")
+        if "solve" not in config_dict:
+            raise ValueError("Missing required 'solve' configuration")
         
         if "output_directory" not in config_dict:
             raise ValueError("Missing required 'output_directory' configuration")
 
-        solve_issue_data = config_dict["solve_issue"]
+        solve_data = config_dict["solve"]
 
         # Parse nested model configuration
-        model_data = solve_issue_data.get("llm_config")
+        model_data = solve_data.get("llm_config")
         if model_data is None or not isinstance(model_data, dict):
-            raise ValueError("Missing or invalid 'llm_config' configuration in solve_issue")
+            raise ValueError("Missing or invalid 'llm_config' configuration in solve")
         if "model_config_name" not in model_data:
-            raise ValueError("Missing 'model_config_name' in solve_issue.llm_config")
+            raise ValueError("Missing 'model_config_name' in solve.llm_config")
         if "temperature" not in model_data:
-            raise ValueError("Missing 'temperature' in solve_issue.llm_config")
+            raise ValueError("Missing 'temperature' in solve.llm_config")
         llm_config = LLMConfig(
             model_config_name=str(model_data["model_config_name"]),
             temperature=float(model_data["temperature"])
@@ -101,7 +101,7 @@ class Config:
 
         # Create verbal algorithm config if present
         verbal_algo_config = None
-        if (verbal_algo_data := solve_issue_data.get("verbal_algorithm")) is not None:
+        if (verbal_algo_data := solve_data.get("verbal_algorithm")) is not None:
             if not isinstance(verbal_algo_data, dict):
                 raise ValueError("verbal_algorithm must be an object or null")
             if "language_code" not in verbal_algo_data:
@@ -115,7 +115,7 @@ class Config:
 
         # Create code implementations config if present
         code_impl_config = None
-        if (code_impl_data := solve_issue_data.get("code_implementations")) is not None:
+        if (code_impl_data := solve_data.get("code_implementations")) is not None:
             if not isinstance(code_impl_data, dict):
                 raise ValueError("code_implementations must be an object or null")
             if "implementation_languages" not in code_impl_data:
@@ -126,17 +126,17 @@ class Config:
                 implementation_languages=list(code_impl_data["implementation_languages"])
             )
 
-        # Create solve issue config
-        solve_issue_config = SolveIssueConfig(
+        # Create solve config
+        solve_config = SolveConfig(
             llm_config=llm_config,
             verbal_algorithm=verbal_algo_config,
-            include_mermaid_diagram=bool(solve_issue_data["include_mermaid_diagram"]),
+            include_mermaid_diagram=bool(solve_data["include_mermaid_diagram"]),
             code_implementations=code_impl_config
         )
 
         # Create and return the complete config
         return cls(
-            solve_issue=solve_issue_config,
+            solve=solve_config,
             output_directory=str(config_dict["output_directory"])
         )
 
@@ -177,14 +177,14 @@ class Config:
             model_config_name=args.llm_model,
             temperature=float(args.temperature)
         )
-        solve_issue_config = SolveIssueConfig(
+        solve_config = SolveConfig(
             llm_config=model_config,
             verbal_algorithm=verbal_algo_config,
             include_mermaid_diagram=args.include_mermaid_diagram,
             code_implementations=code_impl_config
         )
         return cls(
-            solve_issue=solve_issue_config,
+            solve=solve_config,
             output_directory=str(args.output_directory)
         )
 
