@@ -110,10 +110,10 @@ def setup_arg_parser() -> argparse.ArgumentParser:
         help="Enable/disable verbal algorithm explanations.",
     )
     verbal_group.add_argument(
-        "-l", "--verbal-algorithm-languages",
-        nargs="+",
-        default=["en"],
-        help="List of languages for verbal explanations.",
+        "-l", "--verbal-algorithm-language-code",
+        type=str,
+        default="en",
+        help="Language code for verbal explanations (e.g., 'en', 'es').",
     )
     verbal_group.add_argument(
         "-p", "--verbal-algorithm-include-pseudocode",

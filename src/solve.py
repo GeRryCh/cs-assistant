@@ -86,7 +86,7 @@ SYSTEM_PROMPT_FIELD_EXAMPLES = {
 USER_PROMPT_FIELDS = {
     "base_instruction": "Solve this programming problem",
     "code_implementations": "Provide code implementations in the following language(s): {languages}",
-    "verbal_algorithm": "The verbal algorithm explanation MUST be in the following language(s): {languages}",
+    "verbal_algorithm": "The verbal algorithm explanation MUST be in the following language code: {language_code}",
     "problem_statement": "Problem: {problem}"
 }
 
@@ -242,7 +242,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
     def _build_user_prompt(
         issue_description: str,
         fields: List[str],
-        verbal_algorithm_languages: Optional[List[str]],
+        verbal_algorithm_language_code: Optional[str],
         programming_languages: Optional[List[str]]
     ) -> str:
         """
@@ -266,10 +266,9 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
                 USER_PROMPT_FIELDS["code_implementations"].format(languages=code_language_string)
             )
         
-        if "verbal_algorithm" in fields and verbal_algorithm_languages:
-            verbal_language_string = ", ".join(lang.lower() for lang in verbal_algorithm_languages)
+        if "verbal_algorithm" in fields and verbal_algorithm_language_code:
             prompt_parts.append(
-                USER_PROMPT_FIELDS["verbal_algorithm"].format(languages=verbal_language_string)
+                USER_PROMPT_FIELDS["verbal_algorithm"].format(language_code=verbal_algorithm_language_code.lower())
             )
         
         # Join all parts and add the problem statement
@@ -483,7 +482,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         user_prompt = self._build_user_prompt(
             issue_description,
             requested_fields,
-            solve_issue_config.verbal_algorithm.languages if solve_issue_config.verbal_algorithm is not None else [],
+            solve_issue_config.verbal_algorithm.language_code if solve_issue_config.verbal_algorithm is not None else None,
             solve_issue_config.code_implementations.implementation_languages if solve_issue_config.code_implementations is not None else []
         )
 

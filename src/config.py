@@ -6,7 +6,7 @@ from llm_config import LLMConfig
 @dataclass(frozen=True)
 class VerbalAlgorithmConfig:
     """Configuration for the verbal algorithm feature."""
-    languages: List[str] = field(default_factory=lambda: ["en"])
+    language_code: str = "en"
     include_pseudocode: bool = True
 
 @dataclass(frozen=True)
@@ -104,12 +104,12 @@ class Config:
         if (verbal_algo_data := solve_issue_data.get("verbal_algorithm")) is not None:
             if not isinstance(verbal_algo_data, dict):
                 raise ValueError("verbal_algorithm must be an object or null")
-            if "languages" not in verbal_algo_data:
-                raise ValueError("verbal_algorithm must contain 'languages' list")
-            if not isinstance(verbal_algo_data["languages"], list):
-                raise ValueError("verbal_algorithm.languages must be a list")
+            if "language_code" not in verbal_algo_data:
+                raise ValueError("verbal_algorithm must contain 'language_code' string")
+            if not isinstance(verbal_algo_data["language_code"], str):
+                raise ValueError("verbal_algorithm.language_code must be a string")
             verbal_algo_config = VerbalAlgorithmConfig(
-                languages=list(verbal_algo_data["languages"]),
+                language_code=verbal_algo_data["language_code"],
                 include_pseudocode=bool(verbal_algo_data.get("include_pseudocode", True))
             )
 
@@ -163,7 +163,7 @@ class Config:
         verbal_algo_config: Optional[VerbalAlgorithmConfig] = None
         if hasattr(args, 'verbal_algorithm') and args.verbal_algorithm:
             verbal_algo_config = VerbalAlgorithmConfig(
-                languages=list(args.verbal_algorithm_languages if hasattr(args, 'verbal_algorithm_languages') else []),
+                language_code=str(args.verbal_algorithm_language_code) if hasattr(args, 'verbal_algorithm_language_code') else "en",
                 include_pseudocode=args.verbal_algorithm_include_pseudocode if hasattr(args, 'verbal_algorithm_include_pseudocode') else True
             )
 
@@ -216,4 +216,4 @@ class Config:
         Returns:
             A JSON string representation of the configuration.
         """
-        return json.dumps(self.as_dict(), indent=indent) 
+        return json.dumps(self.as_dict(), indent=indent)
