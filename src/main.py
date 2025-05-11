@@ -79,9 +79,9 @@ def setup_arg_parser() -> argparse.ArgumentParser:
         help="Path where the configuration file should be created (default: config.json)"
     )
 
-    # --- solve-issue command ---
+    # --- solve command ---
     solve_parser = subparsers.add_parser(
-        "solve-issue", help="Solve a given coding issue."
+        "solve", help="Solve a given coding issue."
     )
     solve_parser.add_argument(
         "issue_description", type=str, help="The description of the coding issue."
@@ -224,7 +224,7 @@ def handle_create_config(args: argparse.Namespace) -> None:
     create_default_config(args)
 
 def handle_solve_issue(args: argparse.Namespace, config: Config) -> None:
-    """Handles the solve-issue command."""
+    """Handles the solve command."""
     print(f"{constants.GREY}Using configuration:\n{config.to_json(indent=2)}{constants.RESET}")
     solver = IssueSolver(config=config)
     spinner = Spinner("Generating solution...")
@@ -245,7 +245,7 @@ def main():
 
     command_handlers = {
         "create-config": lambda: handle_create_config(args),
-        "solve-issue": lambda: handle_solve_issue(args, resolve_config(args))
+        "solve": lambda: handle_solve_issue(args, resolve_config(args))
     }
 
     if args.command in command_handlers:
@@ -259,4 +259,4 @@ def main():
         parser.print_help()
 
 if __name__ == "__main__":
-    main() 
+    main()
