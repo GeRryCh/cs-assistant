@@ -242,8 +242,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
     def _build_user_prompt(
         issue_description: str,
         fields: List[str],
-        verbal_algorithm_language_code: Optional[str],
-        programming_languages: Optional[List[str]]
+        solve_config: SolveConfig
     ) -> str:
         """
         Dynamically builds a user prompt based on the requested fields.
@@ -251,8 +250,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         Args:
             issue_description: The problem description to solve
             fields: List of field names to include in the prompt
-            verbal_algorithm_languages: List of languages for verbal algorithm explanation
-            programming_languages: List of programming languages for code implementations
+            solve_config: The configuration object containing all settings
             
         Returns:
             A string containing the complete user prompt with only the requested fields
@@ -260,15 +258,15 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         prompt_parts = [USER_PROMPT_FIELDS["base_instruction"]]
         
         # Add field-specific instructions based on requested fields
-        if "code_implementations" in fields and programming_languages:
-            code_language_string = ", ".join(lang.lower() for lang in programming_languages)
+        if "code_implementations" in fields and solve_config.code_implementations is not None:
+            code_language_string = ", ".join(lang.lower() for lang in solve_config.code_implementations.implementation_languages)
             prompt_parts.append(
                 USER_PROMPT_FIELDS["code_implementations"].format(languages=code_language_string)
             )
         
-        if "verbal_algorithm" in fields and verbal_algorithm_language_code:
+        if "verbal_algorithm" in fields and solve_config.verbal_algorithm is not None:
             prompt_parts.append(
-                USER_PROMPT_FIELDS["verbal_algorithm"].format(language_code=verbal_algorithm_language_code.lower())
+                USER_PROMPT_FIELDS["verbal_algorithm"].format(language_code=solve_config.verbal_algorithm.language_code.lower())
             )
         
         # Join all parts and add the problem statement
@@ -482,8 +480,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         user_prompt = self._build_user_prompt(
             issue_description,
             requested_fields,
-            solve_config.verbal_algorithm.language_code if solve_config.verbal_algorithm is not None else None,
-            solve_config.code_implementations.implementation_languages if solve_config.code_implementations is not None else []
+            solve_config
         )
 
         provider = solve_config.llm_config.get_model_provider()
