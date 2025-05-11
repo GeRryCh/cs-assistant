@@ -3,7 +3,7 @@ import sys
 import json
 import os
 from typing import Any, Dict, Optional
-from issue_solver import IssueSolver
+from solve import IssueSolver
 from dotenv import load_dotenv
 from pathlib import Path
 from config import Config
