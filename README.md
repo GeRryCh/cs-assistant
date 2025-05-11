@@ -88,10 +88,10 @@ If installed from PyPI:
 cs-assistant create-config -o config.json
 
 # Solve a coding problem
-cs-assistant solve-issue "Write an algorithm to find the longest common subsequence of two strings"
+cs-assistant solve "Write an algorithm to find the longest common subsequence of two strings"
 
 # Solve a problem with specific configuration file
-cs-assistant -c config.json solve-issue "Implement a binary search tree"
+cs-assistant -c config.json solve "Implement a binary search tree"
 ```
 
 If installed from source:
@@ -101,16 +101,16 @@ If installed from source:
 python -m src.main create-config -o config.json
 
 # Solve a coding problem
-python -m src.main solve-issue "Write an algorithm to find the longest common subsequence of two strings"
+python -m src.main solve "Write an algorithm to find the longest common subsequence of two strings"
 
 # Solve a problem with specific configuration file
-python -m src.main -c config.json solve-issue "Implement a binary search tree"
+python -m src.main -c config.json solve "Implement a binary search tree"
 ```
 
 ### Command Line Options
 
 ```
-usage: CS Assistant [-h] [-c CONFIG] [-o OUTPUT_DIRECTORY] {create-config,solve-issue} ...
+usage: CS Assistant [-h] [-c CONFIG] [-o OUTPUT_DIRECTORY] {create-config,solve} ...
 
 options:
   -h, --help            show this help message and exit
@@ -120,15 +120,15 @@ options:
                         Directory where solution files will be saved.
 
 Available commands:
-  {create-config,solve-issue}
+  {create-config,solve}
     create-config       Create a new configuration file with default settings.
-    solve-issue         Solve a given coding issue.
+    solve               Solve a given coding issue.
 ```
 
-### Solve Issue Command Options
+### Solve Command Options
 
 ```
-usage: CS Assistant solve-issue [-h] [-m LLM_MODEL] [-t TEMPERATURE] [-v | --verbal-algorithm | --no-verbal-algorithm]
+usage: CS Assistant solve [-h] [-m LLM_MODEL] [-t TEMPERATURE] [-v | --verbal-algorithm | --no-verbal-algorithm]
                              [-l VERBAL_ALGORITHM_LANGUAGES [VERBAL_ALGORITHM_LANGUAGES ...]]
                              [-p | --verbal-algorithm-include-pseudocode | --no-verbal-algorithm-include-pseudocode]
                              [-d | --include-mermaid-diagram | --no-include-mermaid-diagram]
@@ -169,7 +169,7 @@ Code Implementation Options:
 
 ```bash
 # Generate a solution for finding prime numbers in Python and JavaScript
-cs-assistant solve-issue -L Python JavaScript "Write an algorithm to find all prime numbers up to n using the Sieve of Eratosthenes"
+cs-assistant solve -L Python JavaScript "Write an algorithm to find all prime numbers up to n using the Sieve of Eratosthenes"
 ```
 
 ## Configuration
@@ -212,11 +212,12 @@ The tool creates a directory structure for each problem in the specified output 
 
 ```
 cs-assistant-output/
-└── find_prime_numbers/
-    ├── verbal_algorithm.md      # Contains algorithm explanation and pseudocode
-    ├── sieve_of_eratosthenes.py # Python implementation
-    ├── SieveOfEratosthenes.js   # JavaScript implementation
-    └── find_prime_numbers-diagram.md # Contains Mermaid diagram
+└── solve/
+    └── find_prime_numbers/
+        ├── verbal_algorithm.md      # Contains algorithm explanation and pseudocode
+        ├── sieve_of_eratosthenes.py # Python implementation
+        ├── SieveOfEratosthenes.js   # JavaScript implementation
+        └── find_prime_numbers-diagram.md # Contains Mermaid diagram
 ```
 
 ## API Keys
@@ -238,3 +239,11 @@ The first run of the application will automatically create this file with templa
 ## License
 
 See the LICENSE file for details.
+
+## Recent Changes
+
+Here's a summary of the latest updates:
+
+- **`1a22ccd`**: Updated solution output path to include a `solve` directory (e.g., `cs-assistant-output/solve/problem_name/`). Also fixed a missing newline at the end of `src/solve.py`.
+- **`3c71c2b`**: Refactored internal code by renaming `src/issue_solver.py` to `src/solve.py`. Unused imports were also removed from `src/solve.py`.
+- **`857729f`**: Renamed the primary command from `solve-issue` to `solve`. For example, you now run `cs-assistant solve "your problem"` instead of `cs-assistant solve-issue "your problem"`.

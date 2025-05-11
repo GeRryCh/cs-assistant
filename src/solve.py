@@ -529,7 +529,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
                 output_dir_name = "sanitized_problem_name_error"
 
             # Create output directory using the sanitized problem name inside the configured output directory
-            solution_path = Path(self.config.output_directory) / output_dir_name
+            solution_path = Path(self.config.output_directory) / "solve" / output_dir_name
             solution_path.mkdir(parents=True, exist_ok=True)
             # print(f"Created solution directory: {solution_path.resolve()}")
 
