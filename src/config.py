@@ -10,17 +10,12 @@ class VerbalAlgorithmConfig:
     include_pseudocode: bool = True
 
 @dataclass(frozen=True)
-class CodeImplementationsConfig:
-    """Configuration for code implementations feature."""
-    implementation_languages: List[str] = field(default_factory=lambda: ["Python"])
-
-@dataclass(frozen=True)
 class SolveConfig:
     """Configuration specific to the 'solve' functionality."""
     llm_config: LLMConfig = field(default_factory=LLMConfig)
     verbal_algorithm: Optional[VerbalAlgorithmConfig] = field(default_factory=VerbalAlgorithmConfig)
     include_mermaid_diagram: bool = True
-    code_implementations: Optional[CodeImplementationsConfig] = field(default_factory=CodeImplementationsConfig)
+    code_implementations: Optional[List[str]] = field(default_factory=lambda: ["Python"])
 
 @dataclass(frozen=True)
 class Config:
@@ -49,9 +44,7 @@ class Config:
                                   "languages": List[str]
                               } | null,
                               "include_mermaid_diagram": bool,
-                              "code_implementations": {
-                                  "implementation_languages": List[str]
-                              } | null
+                              "code_implementations": List[str] | null
                           },
                           "output_directory": str
                       }
@@ -110,28 +103,29 @@ class Config:
                 raise ValueError("verbal_algorithm.language_code must be a string")
             verbal_algo_config = VerbalAlgorithmConfig(
                 language_code=verbal_algo_data["language_code"],
-                include_pseudocode=bool(verbal_algo_data.get("include_pseudocode", True))
+                include_pseudocode=bool(verbal_algo_data.get("include_pseudocode"))
             )
 
-        # Create code implementations config if present
-        code_impl_config = None
+        # Create code implementations list if present
+        code_implementations: Optional[List[str]] = None
         if (code_impl_data := solve_data.get("code_implementations")) is not None:
-            if not isinstance(code_impl_data, dict):
-                raise ValueError("code_implementations must be an object or null")
-            if "implementation_languages" not in code_impl_data:
-                raise ValueError("code_implementations must contain 'implementation_languages' list")
-            if not isinstance(code_impl_data["implementation_languages"], list):
-                raise ValueError("code_implementations.implementation_languages must be a list")
-            code_impl_config = CodeImplementationsConfig(
-                implementation_languages=list(code_impl_data["implementation_languages"])
-            )
+            if not isinstance(code_impl_data, list):
+                raise ValueError("code_implementations must be a list or null")
+            if not all(isinstance(lang, str) for lang in code_impl_data):
+                raise ValueError("All items in code_implementations list must be strings")
+            code_implementations = list(code_impl_data)
+        elif "code_implementations" in solve_data and solve_data["code_implementations"] is None:  # Explicitly null
+            code_implementations = None
+        else:  # Not present, use None
+            code_implementations = None
+
 
         # Create solve config
         solve_config = SolveConfig(
             llm_config=llm_config,
             verbal_algorithm=verbal_algo_config,
             include_mermaid_diagram=bool(solve_data["include_mermaid_diagram"]),
-            code_implementations=code_impl_config
+            code_implementations=code_implementations
         )
 
         # Create and return the complete config
@@ -167,11 +161,14 @@ class Config:
                 include_pseudocode=args.verbal_algorithm_include_pseudocode if hasattr(args, 'verbal_algorithm_include_pseudocode') else True
             )
 
-        code_impl_config: Optional[CodeImplementationsConfig] = None
-        if hasattr(args, 'code_implementations') and args.code_implementations:
-            code_impl_config = CodeImplementationsConfig(
-                implementation_languages=list(args.code_implementations_languages if hasattr(args, 'code_implementations_languages') else [])
-            )
+        code_implementations: Optional[List[str]] = None
+        if hasattr(args, 'code_implementations') and not args.code_implementations:  # Explicitly disabled
+            code_implementations = None
+        elif hasattr(args, 'code_implementations_languages') and args.code_implementations_languages:
+            code_implementations = list(args.code_implementations_languages)
+        else:  # Default if not specified or enabled
+            code_implementations = ["Python"]
+
 
         model_config = LLMConfig(
             model_config_name=args.llm_model,
@@ -181,7 +178,7 @@ class Config:
             llm_config=model_config,
             verbal_algorithm=verbal_algo_config,
             include_mermaid_diagram=args.include_mermaid_diagram,
-            code_implementations=code_impl_config
+            code_implementations=code_implementations
         )
         return cls(
             solve=solve_config,

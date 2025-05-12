@@ -52,22 +52,11 @@
           "type": "boolean"
         },
         "code_implementations": {
-          "description": "Settings for code implementation generation.",
-          "type": "object",
-          "properties": {
-            "enabled": {
-              "description": "Whether to enable code implementation generation.",
-              "type": "boolean"
-            },
-            "implementation_languages": {
-              "description": "List of programming languages for code implementations.",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "required": ["enabled", "implementation_languages"]
+          "description": "List of programming languages for code implementations.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [

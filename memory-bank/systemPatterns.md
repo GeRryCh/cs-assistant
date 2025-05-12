@@ -6,10 +6,11 @@ This section documents the core architecture, design patterns, and component rel
 - **CLI Layer** (`src/main.py`):  
   - Handles argument parsing, command dispatch (`create-config`, `solve`), and environment setup.  
 - **Configuration Layer** (`src/config.py`, `config.schema.json`):  
-  - Strongly-typed `Config` classes built with Python `dataclasses`.  
+  - Strongly-typed `Config` classes built with Python `dataclasses`.
+  - `code_implementations` is now a direct list of strings in `SolveConfig` and `config.schema.json`.
   - Two construction paths: JSON file (`Config.from_json`) and CLI args (`Config.from_args`).  
   - JSON Schema ensures user-provided configuration matches expected structure.  
-- **API Client Layer** (`src/api_clients.py`):  
+- **API Client Layer** (`src/api_clients.py`):
   - Adapters for OpenAI, Google Gemini, and Anthropic.  
   - Unified interface returning raw JSON strings for downstream parsing.  
 - **Solver Layer** (`src/solve.py`):  

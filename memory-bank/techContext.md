@@ -17,8 +17,10 @@ This section outlines the technologies, dependencies, and development setup for 
   - `pytest` for unit tests  
 
 ## Configuration Patterns
-- JSON Schema (`config.schema.json`) enforces shape of `config.json`  
-- `Config` dataclasses enable strongly-typed, immutable configuration  
+- JSON Schema (`config.schema.json`) enforces shape of `config.json`.
+  - The `code_implementations` field within `solve` is now a direct array of strings, rather than a nested object.
+- `Config` dataclasses enable strongly-typed, immutable configuration.
+  - `SolveConfig.code_implementations` is now `Optional[List[str]]`.
 - Two config instantiation paths:
   1. `Config.from_json` parses and validates JSON file  
   2. `Config.from_args` builds from CLI flags

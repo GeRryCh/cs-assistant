@@ -85,7 +85,7 @@ SYSTEM_PROMPT_FIELD_EXAMPLES = {
 # User prompt field building blocks
 USER_PROMPT_FIELDS = {
     "base_instruction": "Solve this programming problem",
-    "code_implementations": "Provide code implementations in the following language(s): {languages}",
+    "code_implementations": "Provide code implementations in the following language(s): {code_languages}",
     "verbal_algorithm": "The verbal algorithm explanation MUST be in the following language code: {language_code}",
     "problem_statement": "Problem: {problem}"
 }
@@ -173,7 +173,7 @@ class IssueSolver:
         if config.verbal_algorithm is not None and config.verbal_algorithm.include_pseudocode:
             requested_fields.append("pseudocode")
         
-        # Add code_implementations field if enabled
+        # Add code_implementations field if the list is not None
         if config.code_implementations is not None:
             requested_fields.append("code_implementations")
         
@@ -259,10 +259,13 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         
         # Add field-specific instructions based on requested fields
         if "code_implementations" in fields and solve_config.code_implementations is not None:
-            code_language_string = ", ".join(lang.lower() for lang in solve_config.code_implementations.implementation_languages)
-            prompt_parts.append(
-                USER_PROMPT_FIELDS["code_implementations"].format(languages=code_language_string)
-            )
+            if solve_config.code_implementations: # Ensure the list is not empty
+                code_language_string = ", ".join(lang.lower() for lang in solve_config.code_implementations)
+                prompt_parts.append(
+                    USER_PROMPT_FIELDS["code_implementations"].format(code_languages=code_language_string)
+                )
+            # If solve_config.code_implementations is an empty list, we might not want to add this part to the prompt,
+            # or handle it differently. For now, it won't add the "Provide code implementations..." part if the list is empty.
         
         if "verbal_algorithm" in fields and solve_config.verbal_algorithm is not None:
             prompt_parts.append(
