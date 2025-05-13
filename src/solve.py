@@ -143,8 +143,7 @@ class IssueSolver:
             dynamic_schema=dynamic_schema
         )
 
-    @staticmethod
-    def _sanitize_filename(name: str) -> str:
+    def _sanitize_filename(self, name: str) -> str:
         """Removes or replaces characters unsafe for filenames/directory names."""
         # Remove leading/trailing whitespace
         name = name.strip()
@@ -161,8 +160,7 @@ class IssueSolver:
             return "unnamed_solution"
         return name
 
-    @staticmethod
-    def _build_requested_fields(config: SolveConfig) -> List[str]:
+    def _build_requested_fields(self, config: SolveConfig) -> List[str]:
         # Build requested fields list - problem_name is always included
         requested_fields = ["problem_name"]
         
@@ -183,8 +181,7 @@ class IssueSolver:
 
         return requested_fields
 
-    @staticmethod
-    def _build_system_prompt(fields: List[str]) -> str:
+    def _build_system_prompt(self, fields: List[str]) -> str:
         """
         Dynamically builds a system prompt containing only the specified fields.
         
@@ -238,8 +235,8 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         # Assemble the complete prompt
         return intro + field_text + example_section + conclusion
 
-    @staticmethod
     def _build_user_prompt(
+        self,
         issue_description: str,
         fields: List[str],
         solve_config: SolveConfig
@@ -278,8 +275,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         
         return prompt
 
-    @staticmethod
-    def _process_verbal_algorithm(solution_data: Dict, solution_path: Path) -> None:
+    def _process_verbal_algorithm(self, solution_data: Dict, solution_path: Path) -> None:
         """
         Process the verbal algorithm field independently.
         
@@ -313,8 +309,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         
         # print(f"Added verbal algorithm to {md_path.name}")
 
-    @staticmethod
-    def _process_pseudocode(solution_data: Dict, solution_path: Path) -> None:
+    def _process_pseudocode(self, solution_data: Dict, solution_path: Path) -> None:
         """
         Process the pseudocode field independently.
         
@@ -352,8 +347,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         
         # print(f"Added pseudocode to {md_path.name}")
 
-    @staticmethod
-    def _process_code_implementations(solution_data: Dict, solution_path: Path) -> None:
+    def _process_code_implementations(self, solution_data: Dict, solution_path: Path) -> None:
         """
         Process the code implementations field independently.
         
@@ -393,7 +387,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
                 continue
             
             # Sanitize the filename provided by the LLM
-            filename = IssueSolver._sanitize_filename(filename_raw)
+            filename = self._sanitize_filename(filename_raw)
             if not filename: # Check if filename became empty
                 print(f"Warning: Skipping implementation for '{lang_key}' because filename '{filename_raw}' became empty after sanitization.")
                 continue
@@ -408,8 +402,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
             except IOError as e:
                 print(f"Error writing file {file_path.name} for language '{lang_key}': {e}")
 
-    @staticmethod
-    def _process_mermaid_diagram(solution_data: Dict, solution_path: Path) -> None:
+    def _process_mermaid_diagram(self, solution_data: Dict, solution_path: Path) -> None:
         """
         Process the mermaid diagram field independently.
         
@@ -443,8 +436,7 @@ Focus exclusively on delivering a single, valid JSON object adhering to this str
         except IOError as e:
             print(f"Error writing Mermaid diagram file {diagram_path.name}: {e}")
 
-    @staticmethod
-    def _clean_json_response(json_response_str: str) -> str:
+    def _clean_json_response(self, json_response_str: str) -> str:
         """
         Cleans the JSON response string by removing markdown code block markers.
         
