@@ -4,7 +4,7 @@ This section outlines the technologies, dependencies, and development setup for 
 
 ## Languages and Runtime
 - Python 3.8+  
-- Uses standard library modules: `argparse`, `json`, `pathlib`, `re`, `dataclasses`, `typing`
+- Uses standard library modules: `argparse`, `json`, `pathlib`, `re`, `dataclasses`, `typing`, `os`, `sys`
 
 ## Dependencies
 - LLM Providers
@@ -15,6 +15,9 @@ This section outlines the technologies, dependencies, and development setup for 
   - `python-dotenv` for loading `.csarc` file  
 - Testing  
   - `pytest` for unit tests  
+- User Interface
+  - ANSI color codes for terminal output formatting
+  - Custom spinner implementation for visual feedback during API calls
 
 ## Configuration Patterns
 - JSON Schema (`config.schema.json`) enforces shape of `config.json`.
@@ -37,7 +40,9 @@ This section outlines the technologies, dependencies, and development setup for 
 │   ├── spinner.py        # Console spinner utility
 │   └── constants.py      # ANSI color codes and other constants
 ├── tests/
+│   ├── __init__.py       # Package marker
 │   └── test_api_clients.py  # Unit tests for API client wrappers
+├── memory-bank/          # Project documentation & context
 ├── config.schema.json    # JSON schema for user config
 ├── pyproject.toml        # Build and packaging configuration
 ├── requirements.txt      # Runtime dependencies
@@ -58,3 +63,20 @@ This section outlines the technologies, dependencies, and development setup for 
 4. Run tests:
    ```bash
    pytest
+   ```
+5. Create default config:
+   ```bash
+   python3 -m src.main create-config
+   ```
+6. Configure API keys in `~/.config/cs_assistant/.csarc`
+
+## API Integration
+- OpenAI: Uses the `openai` Python library with JSON response format
+- Google: Uses `google.generativeai` with response MIME type configuration
+- Anthropic: Uses the `anthropic` library with tool use for structured output
+- All API clients include error handling and return structured JSON responses
+
+## Testing Strategy
+- Unit tests for API clients focus on connectivity verification
+- API test models chosen for cost-effectiveness and reliability
+- Future test expansion needed for solver functionality
